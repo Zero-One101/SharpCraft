@@ -101,6 +101,49 @@ namespace SharpCraft
 
             // TODO: Add your update logic here
 
+            var keyboardState = Keyboard.GetState();
+
+            if (keyboardState.IsKeyDown(Keys.Left))
+            {
+                camPosition.X += 1f;
+                camTarget.X += 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Right))
+            {
+                camPosition.X -= 1f;
+                camTarget.X -= 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Up))
+            {
+                camPosition.Y += 1f;
+                camTarget.Y += 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Down))
+            {
+                camPosition.Y -= 1f;
+                camTarget.Y -= 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.OemPlus) || keyboardState.IsKeyDown(Keys.Add))
+            {
+                camPosition.Z += 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.OemMinus) || keyboardState.IsKeyDown(Keys.Subtract))
+            {
+                camPosition.Z -= 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Space))
+            {
+                orbit = !orbit;
+            }
+
+            if (orbit)
+            {
+                var rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(1f));
+                camPosition = Vector3.Transform(camPosition, rotationMatrix);
+            }
+
+            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
+
             base.Update(gameTime);
         }
 
