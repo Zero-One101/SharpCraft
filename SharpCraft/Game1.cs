@@ -58,8 +58,8 @@ namespace SharpCraft
             cube[1].Initialise(new Vector3(0, -50, 0), Vector3.Down);
             cube[2].Initialise(new Vector3(50, 0, 0), Vector3.Left);
             cube[3].Initialise(new Vector3(-50, 0, 0), Vector3.Right);
-            cube[4].Initialise(new Vector3(0, 0, -50), Vector3.Forward);
-            cube[5].Initialise(new Vector3(0, 0, 50), Vector3.Backward);
+            cube[4].Initialise(new Vector3(0, 0, -50), Vector3.Zero);
+            cube[5].Initialise(new Vector3(0, 0, 50), Vector3.Up * 2f);
         }
 
         /// <summary>
@@ -151,11 +151,11 @@ namespace SharpCraft
 
             RasterizerState rasterizerState = new RasterizerState()
             {
-                CullMode = CullMode.None
+                CullMode = CullMode.CullCounterClockwiseFace
             };
             GraphicsDevice.RasterizerState = rasterizerState;
 
-            foreach(var quad in cube)
+            foreach (var quad in cube)
             {
                 quad.Draw(gameTime, GraphicsDevice, viewMatrix, projectionMatrix);
             }
