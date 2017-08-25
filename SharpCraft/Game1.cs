@@ -17,13 +17,7 @@ namespace SharpCraft
         Vector3 camPosition;
         Matrix projectionMatrix;
         Matrix viewMatrix;
-        Matrix worldMatrix;
-
-        BasicEffect basicEffect;
-
-        // Geometry info
-        VertexPositionColor[] triangleVertices;
-        VertexBuffer vertexBuffer;
+        Quad[] cube;
 
         bool orbit = false;
 
@@ -47,28 +41,25 @@ namespace SharpCraft
 
             // Set up camera
             camTarget = new Vector3(0f, 0f, 0f);
-            camPosition = new Vector3(0f, 0f, -100f);
+            camPosition = new Vector3(0f, 0f, -500);
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 1000f);
             viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f)); // Y up
-            worldMatrix = Matrix.CreateWorld(camTarget, Vector3.Forward, Vector3.Up);
+            cube = new Quad[6]
+                {
+                    new Quad(),
+                    new Quad(),
+                    new Quad(),
+                    new Quad(),
+                    new Quad(),
+                    new Quad()
+                };
 
-            basicEffect = new BasicEffect(GraphicsDevice);
-            basicEffect.Alpha = 1f;
-
-            basicEffect.VertexColorEnabled = true;
-            basicEffect.LightingEnabled = false;
-
-            // Geometry - a simple quad about the origin
-            triangleVertices = new VertexPositionColor[6];
-            triangleVertices[0] = new VertexPositionColor(new Vector3(50, 50, 0), Color.Red);
-            triangleVertices[1] = new VertexPositionColor(new Vector3(-50, 50, 0), Color.Green);
-            triangleVertices[2] = new VertexPositionColor(new Vector3(-50, -50, 0), Color.Blue);
-            triangleVertices[3] = triangleVertices[0];
-            triangleVertices[4] = triangleVertices[2];
-            triangleVertices[5] = new VertexPositionColor(new Vector3(50, -50, 0), Color.Green);
-
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), triangleVertices.Length, BufferUsage.WriteOnly);
-            vertexBuffer.SetData(triangleVertices);
+            cube[0].Initialise(new Vector3(0, 50, 0), Vector3.Up);
+            cube[1].Initialise(new Vector3(0, -50, 0), Vector3.Down);
+            cube[2].Initialise(new Vector3(50, 0, 0), Vector3.Left);
+            cube[3].Initialise(new Vector3(-50, 0, 0), Vector3.Right);
+            cube[4].Initialise(new Vector3(0, 0, -50), Vector3.Forward);
+            cube[5].Initialise(new Vector3(0, 0, 50), Vector3.Backward);
         }
 
         /// <summary>
@@ -157,13 +148,6 @@ namespace SharpCraft
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            GraphicsDevice.SetVertexBuffer(vertexBuffer);
-
-            // TODO: Add your drawing code here
-
-            basicEffect.Projection = projectionMatrix;
-            basicEffect.View = viewMatrix;
-            basicEffect.World = worldMatrix;
 
             RasterizerState rasterizerState = new RasterizerState()
             {
@@ -171,10 +155,9 @@ namespace SharpCraft
             };
             GraphicsDevice.RasterizerState = rasterizerState;
 
-            foreach(var pass in basicEffect.CurrentTechnique.Passes)
+            foreach(var quad in cube)
             {
-                pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
+                quad.Draw(gameTime, GraphicsDevice, viewMatrix, projectionMatrix);
             }
 
             base.Draw(gameTime);
