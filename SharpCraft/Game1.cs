@@ -58,13 +58,16 @@ namespace SharpCraft
             basicEffect.VertexColorEnabled = true;
             basicEffect.LightingEnabled = false;
 
-            // Geometry - a simple triangle about the origin
-            triangleVertices = new VertexPositionColor[3];
-            triangleVertices[0] = new VertexPositionColor(new Vector3(0, 20, 0), Color.Red);
-            triangleVertices[1] = new VertexPositionColor(new Vector3(-20, -20, 0), Color.Green);
-            triangleVertices[2] = new VertexPositionColor(new Vector3(20, -20, 0), Color.Blue);
+            // Geometry - a simple quad about the origin
+            triangleVertices = new VertexPositionColor[6];
+            triangleVertices[0] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Red);
+            triangleVertices[1] = new VertexPositionColor(new Vector3(-100, 0, 0), Color.Green);
+            triangleVertices[2] = new VertexPositionColor(new Vector3(-100, -100, 0), Color.Blue);
+            triangleVertices[3] = triangleVertices[0];
+            triangleVertices[4] = triangleVertices[2];
+            triangleVertices[5] = new VertexPositionColor(new Vector3(0, -100, 0), Color.Green);
 
-            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), 3, BufferUsage.WriteOnly);
+            vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), triangleVertices.Length, BufferUsage.WriteOnly);
             vertexBuffer.SetData(triangleVertices);
         }
 
@@ -162,14 +165,16 @@ namespace SharpCraft
             basicEffect.View = viewMatrix;
             basicEffect.World = worldMatrix;
 
-            RasterizerState rasterizerState = new RasterizerState();
-            rasterizerState.CullMode = CullMode.None;
+            RasterizerState rasterizerState = new RasterizerState()
+            {
+                CullMode = CullMode.None
+            };
             GraphicsDevice.RasterizerState = rasterizerState;
 
             foreach(var pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 3);
+                GraphicsDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, 2);
             }
 
             base.Draw(gameTime);
