@@ -10,6 +10,7 @@ namespace SharpCraft
 {
     class Quad
     {
+        private GraphicsDevice graphicsDevice;
         private float radius = 50f;
         private Vector3 position;
         private Vector3 rotation;
@@ -19,7 +20,7 @@ namespace SharpCraft
         private Texture2D texture;
         VertexPositionTexture[] tVerts;
 
-        public void Initialise(Vector3 position, Vector3 rotation, Texture2D texture)
+        public void Initialise(Vector3 position, Vector3 rotation, Texture2D texture, GraphicsDevice graphicsDevice)
         {
             this.texture = texture;
             this.position = position;
@@ -42,22 +43,18 @@ namespace SharpCraft
                 new VertexPositionTexture(new Vector3(-radius, -radius, 0), new Vector2(1, 1)),
                 new VertexPositionTexture(new Vector3(radius, -radius, 0), new Vector2(0, 1))
             };
+
+            this.graphicsDevice = graphicsDevice;
         }
 
-        public void Draw(GameTime gameTime, GraphicsDevice graphicsDevice, Matrix viewMatrix, Matrix projectionMatrix)
+        public void Draw(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix, BasicEffect effect)
         {
-            var basicEffect = new BasicEffect(graphicsDevice)
-            {
-                Alpha = 1f,
-                TextureEnabled = true,
-                Texture = texture,
-                //LightingEnabled = true,
-                Projection = projectionMatrix,
-                View = viewMatrix,
-                World = worldMatrix
-            };
+            effect.Texture = texture;
+            effect.Projection = projectionMatrix;
+            effect.View = viewMatrix;
+            effect.World = worldMatrix;
 
-            foreach(var pass in basicEffect.CurrentTechnique.Passes)
+            foreach(var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
                 graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, tVerts, 0, 2);

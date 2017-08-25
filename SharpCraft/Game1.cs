@@ -9,9 +9,10 @@ namespace SharpCraft
     /// </summary>
     public class Game1 : Game
     {
-        static Texture2D grassTop;
-        static Texture2D grassSide;
-        static Texture2D dirt;
+        public static Texture2D grassTop;
+        public static Texture2D grassSide;
+        public static Texture2D dirt;
+        static Vector3 worldSize = new Vector3(16, 256, 16);
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -21,7 +22,7 @@ namespace SharpCraft
         Vector3 camPosition;
         Matrix projectionMatrix;
         Matrix viewMatrix;
-        Quad[] cube;
+        Cube[, ,] cubes = new Cube[(int)worldSize.X, (int)worldSize.Y, (int)worldSize.Z];
 
         bool orbit = false;
 
@@ -46,24 +47,19 @@ namespace SharpCraft
             // Set up camera
             camTarget = new Vector3(0f, 0f, 0f);
             camPosition = new Vector3(0f, 0f, -500);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(90f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 1000f);
+            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 10000000f);
             viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f)); // Y up
-            cube = new Quad[6]
-                {
-                    new Quad(),
-                    new Quad(),
-                    new Quad(),
-                    new Quad(),
-                    new Quad(),
-                    new Quad()
-                };
 
-            cube[0].Initialise(new Vector3(0, 50, 0), Vector3.Up, grassTop);
-            cube[1].Initialise(new Vector3(0, -50, 0), Vector3.Down, dirt);
-            cube[2].Initialise(new Vector3(50, 0, 0), Vector3.Left, grassSide);
-            cube[3].Initialise(new Vector3(-50, 0, 0), Vector3.Right, grassSide);
-            cube[5].Initialise(new Vector3(0, 0, 50), Vector3.Left * 2f, grassSide);
-            cube[4].Initialise(new Vector3(0, 0, -50), Vector3.Zero, grassSide);
+            for (var x = 0; x < worldSize.X; x++)
+            {
+                for (var y = 0; y < worldSize.Y; y++)
+                {
+                    for (var z = 0; z < worldSize.Z; z++)
+                    {
+                        cubes[x, y, z] = new Cube(new Vector3(x * 100, y * 100, z * 100), GraphicsDevice);
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -163,9 +159,9 @@ namespace SharpCraft
             GraphicsDevice.RasterizerState = rasterizerState;
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            foreach (var quad in cube)
+            foreach (var cube in cubes)
             {
-                quad.Draw(gameTime, GraphicsDevice, viewMatrix, projectionMatrix);
+                cube.Draw(gameTime, viewMatrix, projectionMatrix);
             }
             base.Draw(gameTime);
         }
