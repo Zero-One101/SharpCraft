@@ -60,12 +60,12 @@ namespace SharpCraft
 
             // Geometry - a simple quad about the origin
             triangleVertices = new VertexPositionColor[6];
-            triangleVertices[0] = new VertexPositionColor(new Vector3(0, 0, 0), Color.Red);
-            triangleVertices[1] = new VertexPositionColor(new Vector3(-100, 0, 0), Color.Green);
-            triangleVertices[2] = new VertexPositionColor(new Vector3(-100, -100, 0), Color.Blue);
+            triangleVertices[0] = new VertexPositionColor(new Vector3(50, 50, 0), Color.Red);
+            triangleVertices[1] = new VertexPositionColor(new Vector3(-50, 50, 0), Color.Green);
+            triangleVertices[2] = new VertexPositionColor(new Vector3(-50, -50, 0), Color.Blue);
             triangleVertices[3] = triangleVertices[0];
             triangleVertices[4] = triangleVertices[2];
-            triangleVertices[5] = new VertexPositionColor(new Vector3(0, -100, 0), Color.Green);
+            triangleVertices[5] = new VertexPositionColor(new Vector3(50, -50, 0), Color.Green);
 
             vertexBuffer = new VertexBuffer(GraphicsDevice, typeof(VertexPositionColor), triangleVertices.Length, BufferUsage.WriteOnly);
             vertexBuffer.SetData(triangleVertices);
