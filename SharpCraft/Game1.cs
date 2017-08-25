@@ -9,6 +9,10 @@ namespace SharpCraft
     /// </summary>
     public class Game1 : Game
     {
+        static Texture2D grassTop;
+        static Texture2D grassSide;
+        static Texture2D dirt;
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -54,12 +58,12 @@ namespace SharpCraft
                     new Quad()
                 };
 
-            cube[0].Initialise(new Vector3(0, 50, 0), Vector3.Up);
-            cube[1].Initialise(new Vector3(0, -50, 0), Vector3.Down);
-            cube[2].Initialise(new Vector3(50, 0, 0), Vector3.Left);
-            cube[3].Initialise(new Vector3(-50, 0, 0), Vector3.Right);
-            cube[4].Initialise(new Vector3(0, 0, -50), Vector3.Zero);
-            cube[5].Initialise(new Vector3(0, 0, 50), Vector3.Up * 2f);
+            cube[0].Initialise(new Vector3(0, 50, 0), Vector3.Up, grassTop);
+            cube[1].Initialise(new Vector3(0, -50, 0), Vector3.Down, dirt);
+            cube[2].Initialise(new Vector3(50, 0, 0), Vector3.Left, grassSide);
+            cube[3].Initialise(new Vector3(-50, 0, 0), Vector3.Right, grassSide);
+            cube[5].Initialise(new Vector3(0, 0, 50), Vector3.Left * 2f, grassSide);
+            cube[4].Initialise(new Vector3(0, 0, -50), Vector3.Zero, grassSide);
         }
 
         /// <summary>
@@ -72,6 +76,9 @@ namespace SharpCraft
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            grassTop = Content.Load<Texture2D>("Textures/grass_top_green");
+            grassSide = Content.Load<Texture2D>("Textures/grass_side");
+            dirt = Content.Load<Texture2D>("Textures/dirt");
         }
 
         /// <summary>
@@ -154,12 +161,12 @@ namespace SharpCraft
                 CullMode = CullMode.CullCounterClockwiseFace
             };
             GraphicsDevice.RasterizerState = rasterizerState;
+            GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
             foreach (var quad in cube)
             {
                 quad.Draw(gameTime, GraphicsDevice, viewMatrix, projectionMatrix);
             }
-
             base.Draw(gameTime);
         }
     }

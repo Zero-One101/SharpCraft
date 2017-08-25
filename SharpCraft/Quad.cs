@@ -16,10 +16,12 @@ namespace SharpCraft
         private Matrix translationMatrix;
         private Matrix rotationMatrix;
         private Matrix worldMatrix;
-        VertexPositionColor[] vertices;
+        private Texture2D texture;
+        VertexPositionTexture[] tVerts;
 
-        public void Initialise(Vector3 position, Vector3 rotation)
+        public void Initialise(Vector3 position, Vector3 rotation, Texture2D texture)
         {
+            this.texture = texture;
             this.position = position;
             translationMatrix = Matrix.CreateTranslation(position);
             this.rotation = rotation;
@@ -31,14 +33,14 @@ namespace SharpCraft
 
             worldMatrix = rotationMatrix * translationMatrix;
 
-            vertices = new VertexPositionColor[]
+            tVerts = new VertexPositionTexture[]
             {
-                new VertexPositionColor(new Vector3(radius, radius, 0), Color.Red),
-                new VertexPositionColor(new Vector3(-radius, radius, 0), Color.Green),
-                new VertexPositionColor(new Vector3(-radius, -radius, 0), Color.Blue),
-                new VertexPositionColor(new Vector3(radius, radius, 0), Color.Red),
-                new VertexPositionColor(new Vector3(-radius, -radius, 0), Color.Blue),
-                new VertexPositionColor(new Vector3(radius, -radius, 0), Color.Green)
+                new VertexPositionTexture(new Vector3(radius, radius, 0), new Vector2(0, 0)),
+                new VertexPositionTexture(new Vector3(-radius, radius, 0), new Vector2(1, 0)),
+                new VertexPositionTexture(new Vector3(-radius, -radius, 0), new Vector2(1, 1)),
+                new VertexPositionTexture(new Vector3(radius, radius, 0), new Vector2(0, 0)),
+                new VertexPositionTexture(new Vector3(-radius, -radius, 0), new Vector2(1, 1)),
+                new VertexPositionTexture(new Vector3(radius, -radius, 0), new Vector2(0, 1))
             };
         }
 
@@ -47,7 +49,9 @@ namespace SharpCraft
             var basicEffect = new BasicEffect(graphicsDevice)
             {
                 Alpha = 1f,
-                VertexColorEnabled = true,
+                TextureEnabled = true,
+                Texture = texture,
+                //LightingEnabled = true,
                 Projection = projectionMatrix,
                 View = viewMatrix,
                 World = worldMatrix
@@ -56,7 +60,7 @@ namespace SharpCraft
             foreach(var pass in basicEffect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 2);
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, tVerts, 0, 2);
             }
         }
     }
