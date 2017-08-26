@@ -61,3 +61,10 @@
 /processorParam:TextureFormat=Color
 /build:Textures/grass_top_green.png
 
+#begin Fonts/spritefont1.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/spritefont1.spritefont
+

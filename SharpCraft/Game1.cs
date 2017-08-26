@@ -9,10 +9,13 @@ namespace SharpCraft
     /// </summary>
     public class Game1 : Game
     {
+        private bool showDebug = false;
+
         public static Texture2D grassTop;
         public static Texture2D grassSide;
         public static Texture2D dirt;
-        static Vector3 worldSize = new Vector3(16, 256, 16);
+        public static SpriteFont spriteFont;
+        static Vector3 worldSize = new Vector3(11, 11, 11);
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -60,6 +63,9 @@ namespace SharpCraft
                     }
                 }
             }
+
+            graphics.SynchronizeWithVerticalRetrace = false;
+            base.IsFixedTimeStep = false;
         }
 
         /// <summary>
@@ -75,6 +81,7 @@ namespace SharpCraft
             grassTop = Content.Load<Texture2D>("Textures/grass_top_green");
             grassSide = Content.Load<Texture2D>("Textures/grass_side");
             dirt = Content.Load<Texture2D>("Textures/dirt");
+            spriteFont = Content.Load<SpriteFont>("Fonts/spritefont1");
         }
 
         /// <summary>
@@ -132,6 +139,10 @@ namespace SharpCraft
             {
                 orbit = !orbit;
             }
+            if (keyboardState.IsKeyDown(Keys.F3))
+            {
+                showDebug = !showDebug;
+            }
 
             if (orbit)
             {
@@ -163,6 +174,20 @@ namespace SharpCraft
             {
                 cube.Draw(gameTime, viewMatrix, projectionMatrix);
             }
+
+            var framerate = (1 / gameTime.ElapsedGameTime.TotalSeconds);
+
+            if (showDebug)
+            {
+                spriteBatch.Begin();
+                spriteBatch.DrawString(spriteFont, framerate.ToString(), Vector2.Zero, Color.White);
+                spriteBatch.DrawString(spriteFont, GraphicsAdapter.DefaultAdapter.Description, new Vector2(0, 20), Color.White);
+                spriteBatch.End();
+
+                GraphicsDevice.BlendState = BlendState.Opaque;
+                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+            }
+
             base.Draw(gameTime);
         }
     }
