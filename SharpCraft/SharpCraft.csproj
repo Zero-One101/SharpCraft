@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Chunk.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />

@@ -15,7 +15,7 @@ namespace SharpCraft
         public static Texture2D grassSide;
         public static Texture2D dirt;
         public static SpriteFont spriteFont;
-        static Vector3 worldSize = new Vector3(11, 11, 11);
+        static Point worldSize = new Point(2, 2);
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -25,7 +25,7 @@ namespace SharpCraft
         Vector3 camPosition;
         Matrix projectionMatrix;
         Matrix viewMatrix;
-        Cube[, ,] cubes = new Cube[(int)worldSize.X, (int)worldSize.Y, (int)worldSize.Z];
+        Chunk[,] chunks;
 
         bool orbit = false;
 
@@ -53,14 +53,12 @@ namespace SharpCraft
             projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 10000000f);
             viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f)); // Y up
 
+            chunks = new Chunk[worldSize.X, worldSize.Y];
             for (var x = 0; x < worldSize.X; x++)
             {
                 for (var y = 0; y < worldSize.Y; y++)
                 {
-                    for (var z = 0; z < worldSize.Z; z++)
-                    {
-                        cubes[x, y, z] = new Cube(new Vector3(x * 100, y * 100, z * 100), GraphicsDevice);
-                    }
+                    chunks[x, y] = new Chunk(new Vector3(x * Chunk.chunkSize.X * 100, 0, y * Chunk.chunkSize.Z * 100), GraphicsDevice);
                 }
             }
 
@@ -170,9 +168,14 @@ namespace SharpCraft
             GraphicsDevice.RasterizerState = rasterizerState;
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            foreach (var cube in cubes)
+            int blockCount = 0;
+            int quadCount = 0;
+
+            foreach (var chunk in chunks)
             {
-                cube.Draw(gameTime, viewMatrix, projectionMatrix);
+                chunk.Draw(gameTime, viewMatrix, projectionMatrix);
+                blockCount += chunk.BlockCount;
+                quadCount += chunk.GetQuadCount();
             }
 
             var framerate = (1 / gameTime.ElapsedGameTime.TotalSeconds);
@@ -182,6 +185,9 @@ namespace SharpCraft
                 spriteBatch.Begin();
                 spriteBatch.DrawString(spriteFont, framerate.ToString(), Vector2.Zero, Color.White);
                 spriteBatch.DrawString(spriteFont, GraphicsAdapter.DefaultAdapter.Description, new Vector2(0, 20), Color.White);
+                spriteBatch.DrawString(spriteFont, string.Format("Block count: {0}", blockCount), new Vector2(0, 40), Color.White);
+                spriteBatch.DrawString(spriteFont, string.Format("Total quads: {0}", blockCount * 6), new Vector2(0, 60), Color.White);
+                spriteBatch.DrawString(spriteFont, string.Format("Quads drawn: {0}", quadCount), new Vector2(0, 80), Color.White);
                 spriteBatch.End();
 
                 GraphicsDevice.BlendState = BlendState.Opaque;
