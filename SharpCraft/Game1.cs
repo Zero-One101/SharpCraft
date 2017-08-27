@@ -9,6 +9,7 @@ namespace SharpCraft
 {
     public delegate void KeyDownHandler(object sender, KeyDownEventArgs e);
     public delegate void KeyUpHandler(object sender, KeyUpEventArgs e);
+    public delegate void KeyHeldHandler(object sender, KeyHeldEventArgs e);
 
     /// <summary>
     /// This is the main type for your game.
@@ -18,6 +19,7 @@ namespace SharpCraft
         private bool showDebug = false;
         private readonly List<Keys> downKeys = new List<Keys>();
         private readonly List<Keys> upKeys = new List<Keys>();
+        private readonly List<Keys> heldKeys = new List<Keys>();
 
         public static Texture2D grassTop;
         public static Texture2D grassSide;
@@ -58,6 +60,7 @@ namespace SharpCraft
             inputManager = new InputManager();
             inputManager.KeyDown += InputManager_KeyDown;
             inputManager.KeyUp += InputManager_KeyUp;
+            inputManager.KeyHeld += InputManager_KeyHeld;
             // Set up camera
             camTarget = new Vector3(0f, 0f, 0f);
             camPosition = new Vector3(0f, 0f, -500);
@@ -85,6 +88,11 @@ namespace SharpCraft
         private void InputManager_KeyUp(object sender, KeyUpEventArgs e)
         {
             upKeys.Add(e.Key);
+        }
+
+        private void InputManager_KeyHeld(object sender, KeyHeldEventArgs e)
+        {
+            heldKeys.Add(e.Key);
         }
 
         /// <summary>
@@ -154,13 +162,13 @@ namespace SharpCraft
             {
                 camPosition.Z -= 1f;
             }
-            if (downKeys.Contains(Keys.Space))
+            if (downKeys.Contains(Keys.Space) && !heldKeys.Contains(Keys.Space))
             {
-                orbit = true;
+                orbit = !orbit;
             }
-            if (downKeys.Contains(Keys.F3))
+            if (downKeys.Contains(Keys.F3) && !heldKeys.Contains(Keys.F3))
             {
-                showDebug = true;
+                showDebug = !showDebug;
             }
 
             if (orbit)
@@ -173,6 +181,7 @@ namespace SharpCraft
 
             downKeys.Clear();
             upKeys.Clear();
+            heldKeys.Clear();
 
             base.Update(gameTime);
         }

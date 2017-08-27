@@ -12,15 +12,18 @@ namespace SharpCraft.Managers
     {
         public event KeyDownHandler KeyDown;
         public event KeyUpHandler KeyUp;
+        public event KeyHeldHandler KeyHeld;
         private KeyboardState keyboardState;
         private readonly List<Keys> downKeys = new List<Keys>();
         private readonly List<Keys> upKeys = new List<Keys>();
         private readonly List<Keys> prevDownKeys = new List<Keys>();
+        private readonly List<Keys> heldKeys = new List<Keys>();
 
         public void Update()
         {
             keyboardState = Keyboard.GetState();
 
+            heldKeys.Clear();
             prevDownKeys.Clear();
             prevDownKeys.AddRange(downKeys);
             downKeys.Clear();
@@ -31,6 +34,16 @@ namespace SharpCraft.Managers
             foreach (var downKey in downKeys)
             {
                 FireKeyDown(downKey);
+            }
+
+            foreach (var key in prevDownKeys.Where(key => downKeys.Contains(key)))
+            {
+                heldKeys.Add(key);
+            }
+
+            foreach (var heldKey in heldKeys)
+            {
+                FireKeyHeld(heldKey);
             }
 
             foreach (var key in prevDownKeys.Where(key => !downKeys.Contains(key)))
@@ -52,6 +65,11 @@ namespace SharpCraft.Managers
         private void FireKeyUp(Keys upKey)
         {
             KeyUp?.Invoke(this, new KeyUpEventArgs(upKey));
+        }
+
+        private void FireKeyHeld(Keys heldHey)
+        {
+            KeyHeld?.Invoke(this, new KeyHeldEventArgs(heldHey));
         }
     }
 }
