@@ -18,7 +18,7 @@ namespace SharpCraft
         private Matrix rotationMatrix;
         private Matrix worldMatrix;
         private Texture2D texture;
-        VertexPositionTexture[] tVerts;
+        VertexPositionTexture[] vertices;
 
         public void Initialise(Vector3 position, Vector3 rotation, Texture2D texture, GraphicsDevice graphicsDevice)
         {
@@ -34,7 +34,7 @@ namespace SharpCraft
 
             worldMatrix = rotationMatrix * translationMatrix;
 
-            tVerts = new VertexPositionTexture[]
+            vertices = new VertexPositionTexture[]
             {
                 new VertexPositionTexture(new Vector3(radius, radius, 0), new Vector2(0, 0)),
                 new VertexPositionTexture(new Vector3(-radius, radius, 0), new Vector2(1, 0)),
@@ -57,7 +57,7 @@ namespace SharpCraft
             foreach(var pass in effect.CurrentTechnique.Passes)
             {
                 pass.Apply();
-                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, tVerts, 0, 2);
+                graphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 2);
             }
         }
     }

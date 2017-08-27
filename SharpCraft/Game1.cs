@@ -1,15 +1,23 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SharpCraft.Events;
+using SharpCraft.Managers;
 
 namespace SharpCraft
 {
+    public delegate void KeyDownHandler(object sender, KeyDownEventArgs e);
+    public delegate void KeyUpHandler(object sender, KeyUpEventArgs e);
+
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
     public class Game1 : Game
     {
         private bool showDebug = false;
+        private readonly List<Keys> downKeys = new List<Keys>();
+        private readonly List<Keys> upKeys = new List<Keys>();
 
         public static Texture2D grassTop;
         public static Texture2D grassSide;
@@ -19,6 +27,7 @@ namespace SharpCraft
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        InputManager inputManager;
 
         // Camera
         Vector3 camTarget;
@@ -46,7 +55,9 @@ namespace SharpCraft
             // TODO: Add your initialization logic here
 
             base.Initialize();
-
+            inputManager = new InputManager();
+            inputManager.KeyDown += InputManager_KeyDown;
+            inputManager.KeyUp += InputManager_KeyUp;
             // Set up camera
             camTarget = new Vector3(0f, 0f, 0f);
             camPosition = new Vector3(0f, 0f, -500);
@@ -64,6 +75,16 @@ namespace SharpCraft
 
             graphics.SynchronizeWithVerticalRetrace = false;
             base.IsFixedTimeStep = false;
+        }
+
+        private void InputManager_KeyDown(object sender, KeyDownEventArgs e)
+        {
+            downKeys.Add(e.Key);
+        }
+
+        private void InputManager_KeyUp(object sender, KeyUpEventArgs e)
+        {
+            upKeys.Add(e.Key);
         }
 
         /// <summary>
@@ -103,43 +124,43 @@ namespace SharpCraft
 
             // TODO: Add your update logic here
 
-            var keyboardState = Keyboard.GetState();
+            inputManager.Update();
 
-            if (keyboardState.IsKeyDown(Keys.Left))
+            if (downKeys.Contains(Keys.Left))
             {
                 camPosition.X += 1f;
                 camTarget.X += 1f;
             }
-            if (keyboardState.IsKeyDown(Keys.Right))
+            if (downKeys.Contains(Keys.Right))
             {
                 camPosition.X -= 1f;
                 camTarget.X -= 1f;
             }
-            if (keyboardState.IsKeyDown(Keys.Up))
+            if (downKeys.Contains(Keys.Up))
             {
                 camPosition.Y += 1f;
                 camTarget.Y += 1f;
             }
-            if (keyboardState.IsKeyDown(Keys.Down))
+            if (downKeys.Contains(Keys.Down))
             {
                 camPosition.Y -= 1f;
                 camTarget.Y -= 1f;
             }
-            if (keyboardState.IsKeyDown(Keys.OemPlus) || keyboardState.IsKeyDown(Keys.Add))
+            if (downKeys.Contains(Keys.OemPlus) || downKeys.Contains(Keys.Add))
             {
                 camPosition.Z += 1f;
             }
-            if (keyboardState.IsKeyDown(Keys.OemMinus) || keyboardState.IsKeyDown(Keys.Subtract))
+            if (downKeys.Contains(Keys.OemMinus) || downKeys.Contains(Keys.Subtract))
             {
                 camPosition.Z -= 1f;
             }
-            if (keyboardState.IsKeyDown(Keys.Space))
+            if (downKeys.Contains(Keys.Space))
             {
-                orbit = !orbit;
+                orbit = true;
             }
-            if (keyboardState.IsKeyDown(Keys.F3))
+            if (downKeys.Contains(Keys.F3))
             {
-                showDebug = !showDebug;
+                showDebug = true;
             }
 
             if (orbit)
@@ -149,6 +170,9 @@ namespace SharpCraft
             }
 
             viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
+
+            downKeys.Clear();
+            upKeys.Clear();
 
             base.Update(gameTime);
         }

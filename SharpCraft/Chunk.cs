@@ -49,6 +49,7 @@ namespace SharpCraft
 
         public Cube[] GetSurroundingCubes(Vector3 position)
         {
+            // Use position as array index
             position /= 100;
             position -= (this.position / 100);
 
