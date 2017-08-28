@@ -41,12 +41,15 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Camera.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="Cube.cs" />
+    <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Events\KeyDownEventArgs.cs" />
     <Compile Include="Events\KeyHeldEventArgs.cs" />
     <Compile Include="Events\KeyUpEventArgs.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="Managers\InputManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

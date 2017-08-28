@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using SharpCraft.Managers;
 
 namespace SharpCraft
 {
-    class Chunk
+    class Chunk : GameObject
     {
         public static Vector3 chunkSize = new Vector3(16, 16, 16);
         private Cube[,,] cubes;
@@ -16,7 +17,7 @@ namespace SharpCraft
 
         public int BlockCount { get; private set; }
         
-        public Chunk(Vector3 position, GraphicsDevice graphicsDevice)
+        public Chunk(EntityManager entityManager, Vector3 position) : base(entityManager)
         {
             this.position = position;
             cubes = new Cube[(int)chunkSize.X, (int)chunkSize.Y, (int)chunkSize.Z];
@@ -27,7 +28,7 @@ namespace SharpCraft
                 {
                     for (var z = 0; z < chunkSize.Z; z++)
                     {
-                        cubes[x, y, z] = new Cube(this, new Vector3(position.X + x * 100, position.Y + y * 100, position.Z + z * 100), graphicsDevice);
+                        cubes[x, y, z] = new Cube(entityManager, this, new Vector3(position.X + x * 100, position.Y + y * 100, position.Z + z * 100));
                         BlockCount++;
                     }
                 }
@@ -35,15 +36,20 @@ namespace SharpCraft
 
             foreach (var cube in cubes)
             {
-                cube.Update();
+                cube.Update(new GameTime());
             }
         }
 
-        public void Draw(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix)
+        public override void Update(GameTime gameTime)
+        {
+            
+        }
+
+        public override void Draw(GameTime gameTime)
         {
             foreach (var cube in cubes)
             {
-                cube.Draw(gameTime, viewMatrix, projectionMatrix);
+                cube.Draw(gameTime);
             }
         }
 

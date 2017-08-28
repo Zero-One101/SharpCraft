@@ -25,20 +25,11 @@ namespace SharpCraft
         public static Texture2D grassSide;
         public static Texture2D dirt;
         public static SpriteFont spriteFont;
-        static Point worldSize = new Point(2, 2);
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        EntityManager entityManager;
         InputManager inputManager;
-
-        // Camera
-        Vector3 camTarget;
-        Vector3 camPosition;
-        Matrix projectionMatrix;
-        Matrix viewMatrix;
-        Chunk[,] chunks;
-
-        bool orbit = false;
 
         public Game1()
         {
@@ -61,20 +52,8 @@ namespace SharpCraft
             inputManager.KeyDown += InputManager_KeyDown;
             inputManager.KeyUp += InputManager_KeyUp;
             inputManager.KeyHeld += InputManager_KeyHeld;
-            // Set up camera
-            camTarget = new Vector3(0f, 0f, 0f);
-            camPosition = new Vector3(0f, 0f, -500);
-            projectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(60f), GraphicsDevice.DisplayMode.AspectRatio, 1f, 10000000f);
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, new Vector3(0f, 1f, 0f)); // Y up
 
-            chunks = new Chunk[worldSize.X, worldSize.Y];
-            for (var x = 0; x < worldSize.X; x++)
-            {
-                for (var y = 0; y < worldSize.Y; y++)
-                {
-                    chunks[x, y] = new Chunk(new Vector3(x * Chunk.chunkSize.X * 100, 0, y * Chunk.chunkSize.Z * 100), GraphicsDevice);
-                }
-            }
+            entityManager = new EntityManager(inputManager, GraphicsDevice);
 
             graphics.SynchronizeWithVerticalRetrace = false;
             base.IsFixedTimeStep = false;
@@ -134,50 +113,12 @@ namespace SharpCraft
 
             inputManager.Update();
 
-            if (downKeys.Contains(Keys.Left))
-            {
-                camPosition.X += 1f;
-                camTarget.X += 1f;
-            }
-            if (downKeys.Contains(Keys.Right))
-            {
-                camPosition.X -= 1f;
-                camTarget.X -= 1f;
-            }
-            if (downKeys.Contains(Keys.Up))
-            {
-                camPosition.Y += 1f;
-                camTarget.Y += 1f;
-            }
-            if (downKeys.Contains(Keys.Down))
-            {
-                camPosition.Y -= 1f;
-                camTarget.Y -= 1f;
-            }
-            if (downKeys.Contains(Keys.OemPlus) || downKeys.Contains(Keys.Add))
-            {
-                camPosition.Z += 1f;
-            }
-            if (downKeys.Contains(Keys.OemMinus) || downKeys.Contains(Keys.Subtract))
-            {
-                camPosition.Z -= 1f;
-            }
-            if (downKeys.Contains(Keys.Space) && !heldKeys.Contains(Keys.Space))
-            {
-                orbit = !orbit;
-            }
             if (downKeys.Contains(Keys.F3) && !heldKeys.Contains(Keys.F3))
             {
                 showDebug = !showDebug;
             }
 
-            if (orbit)
-            {
-                var rotationMatrix = Matrix.CreateRotationY(MathHelper.ToRadians(1f));
-                camPosition = Vector3.Transform(camPosition, rotationMatrix);
-            }
-
-            viewMatrix = Matrix.CreateLookAt(camPosition, camTarget, Vector3.Up);
+            entityManager.Update(gameTime);
 
             downKeys.Clear();
             upKeys.Clear();
@@ -201,15 +142,7 @@ namespace SharpCraft
             GraphicsDevice.RasterizerState = rasterizerState;
             GraphicsDevice.SamplerStates[0] = SamplerState.PointClamp;
 
-            int blockCount = 0;
-            int quadCount = 0;
-
-            foreach (var chunk in chunks)
-            {
-                chunk.Draw(gameTime, viewMatrix, projectionMatrix);
-                blockCount += chunk.BlockCount;
-                quadCount += chunk.GetQuadCount();
-            }
+            entityManager.Draw(gameTime);
 
             var framerate = (1 / gameTime.ElapsedGameTime.TotalSeconds);
 
@@ -218,9 +151,9 @@ namespace SharpCraft
                 spriteBatch.Begin();
                 spriteBatch.DrawString(spriteFont, framerate.ToString(), Vector2.Zero, Color.White);
                 spriteBatch.DrawString(spriteFont, GraphicsAdapter.DefaultAdapter.Description, new Vector2(0, 20), Color.White);
-                spriteBatch.DrawString(spriteFont, string.Format("Block count: {0}", blockCount), new Vector2(0, 40), Color.White);
-                spriteBatch.DrawString(spriteFont, string.Format("Total quads: {0}", blockCount * 6), new Vector2(0, 60), Color.White);
-                spriteBatch.DrawString(spriteFont, string.Format("Quads drawn: {0}", quadCount), new Vector2(0, 80), Color.White);
+                spriteBatch.DrawString(spriteFont, string.Format("Block count: {0}", entityManager.BlockCount), new Vector2(0, 40), Color.White);
+                spriteBatch.DrawString(spriteFont, string.Format("Total quads: {0}", entityManager.BlockCount * 6), new Vector2(0, 60), Color.White);
+                spriteBatch.DrawString(spriteFont, string.Format("Quads drawn: {0}", entityManager.QuadCount), new Vector2(0, 80), Color.White);
                 spriteBatch.End();
 
                 GraphicsDevice.BlendState = BlendState.Opaque;
