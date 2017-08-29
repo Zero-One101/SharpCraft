@@ -44,6 +44,7 @@
     <Compile Include="Camera.cs" />
     <Compile Include="Chunk.cs" />
     <Compile Include="Cube.cs" />
+    <Compile Include="Managers\ResourceManager.cs" />
     <Compile Include="Managers\EntityManager.cs" />
     <Compile Include="Events\KeyDownEventArgs.cs" />
     <Compile Include="Events\KeyHeldEventArgs.cs" />

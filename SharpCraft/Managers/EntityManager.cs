@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using SharpCraft.Events;
@@ -16,6 +17,7 @@ namespace SharpCraft.Managers
         public event KeyHeldHandler KeyHeld;
         public event KeyUpHandler KeyUp;
         public GraphicsDevice GraphicsDevice { get; private set; }
+        public ResourceManager ResourceManager { get; private set; }
         public Camera Camera { get; private set; }
         public int BlockCount { get; private set; }
         public int QuadCount { get; private set; }
@@ -27,12 +29,13 @@ namespace SharpCraft.Managers
         private static Point worldSize = new Point(2, 2);
         private Chunk[,] chunks;
 
-        public EntityManager(InputManager inputManager, GraphicsDevice graphicsDevice)
+        public EntityManager(InputManager inputManager, ResourceManager resourceManager, GraphicsDevice graphicsDevice)
         {
             inputManager.KeyDown += InputManager_KeyDown;
             inputManager.KeyHeld += InputManager_KeyHeld;
             inputManager.KeyUp += InputManager_KeyUp;
 
+            ResourceManager = resourceManager;
             GraphicsDevice = graphicsDevice;
 
             Camera = new Camera(this, 60f, graphicsDevice.DisplayMode.AspectRatio);

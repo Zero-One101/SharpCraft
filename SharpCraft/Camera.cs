@@ -68,9 +68,9 @@ namespace SharpCraft
                 camPosition.X -= 1;
             }
 
-            rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
-            translationMatrix = Matrix.CreateTranslation(camPosition);
-            ViewMatrix = Matrix.CreateLookAt(camPosition, translationMatrix.Forward, Vector3.Up);
+            rotationMatrix = Matrix.CreateRotationY(0);
+            translationMatrix = Matrix.CreateTranslation(camPosition) * rotationMatrix;
+            ViewMatrix = Matrix.CreateLookAt(camPosition, rotationMatrix.Forward, Vector3.Up);
 
             downKeys.Clear();
             upKeys.Clear();

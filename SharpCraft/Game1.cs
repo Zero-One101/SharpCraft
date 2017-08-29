@@ -21,15 +21,13 @@ namespace SharpCraft
         private readonly List<Keys> upKeys = new List<Keys>();
         private readonly List<Keys> heldKeys = new List<Keys>();
 
-        public static Texture2D grassTop;
-        public static Texture2D grassSide;
-        public static Texture2D dirt;
         public static SpriteFont spriteFont;
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         EntityManager entityManager;
         InputManager inputManager;
+        ResourceManager resourceManager;
 
         public Game1()
         {
@@ -53,7 +51,9 @@ namespace SharpCraft
             inputManager.KeyUp += InputManager_KeyUp;
             inputManager.KeyHeld += InputManager_KeyHeld;
 
-            entityManager = new EntityManager(inputManager, GraphicsDevice);
+            resourceManager = new ResourceManager(Content);
+
+            entityManager = new EntityManager(inputManager, resourceManager, GraphicsDevice);
 
             graphics.SynchronizeWithVerticalRetrace = false;
             base.IsFixedTimeStep = false;
@@ -84,9 +84,6 @@ namespace SharpCraft
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            grassTop = Content.Load<Texture2D>("Textures/grass_top_green");
-            grassSide = Content.Load<Texture2D>("Textures/grass_side");
-            dirt = Content.Load<Texture2D>("Textures/dirt");
             spriteFont = Content.Load<SpriteFont>("Fonts/spritefont1");
         }
 

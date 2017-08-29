@@ -14,9 +14,16 @@ namespace SharpCraft
         private Quad[] faces;
         private List<Quad> drawList = new List<Quad>();
         private BasicEffect effect;
+        private Texture2D grassTop;
+        private Texture2D grassSide;
+        private Texture2D dirt;
 
         public Cube(EntityManager entityManager, Chunk parent, Vector3 position) : base(entityManager)
         {
+            grassTop = entityManager.ResourceManager.LoadTexture("grass_top_green");
+            grassSide = entityManager.ResourceManager.LoadTexture("grass_side");
+            dirt = entityManager.ResourceManager.LoadTexture("dirt");
+
             this.position = position;
             this.parent = parent;
             faces = new Quad[6]
@@ -36,12 +43,12 @@ namespace SharpCraft
             var forwardPos = new Vector3(position.X, position.Y, position.Z + radius);
             var backwardPos = new Vector3(position.X, position.Y, position.Z - radius);
 
-            faces[0].Initialise(topPos, Vector3.Up, Game1.grassTop, entityManager.GraphicsDevice);
-            faces[1].Initialise(bottomPos, Vector3.Down, Game1.dirt, entityManager.GraphicsDevice);
-            faces[2].Initialise(leftPos, Vector3.Left, Game1.grassSide, entityManager.GraphicsDevice);
-            faces[3].Initialise(rightPos, Vector3.Right, Game1.grassSide, entityManager.GraphicsDevice);
-            faces[4].Initialise(forwardPos, Vector3.Left * 2f, Game1.grassSide, entityManager.GraphicsDevice);
-            faces[5].Initialise(backwardPos, Vector3.Zero, Game1.grassSide, entityManager.GraphicsDevice);
+            faces[0].Initialise(topPos, Vector3.Up, grassTop, entityManager.GraphicsDevice);
+            faces[1].Initialise(bottomPos, Vector3.Down, dirt, entityManager.GraphicsDevice);
+            faces[2].Initialise(leftPos, Vector3.Left, grassSide, entityManager.GraphicsDevice);
+            faces[3].Initialise(rightPos, Vector3.Right, grassSide, entityManager.GraphicsDevice);
+            faces[4].Initialise(forwardPos, Vector3.Left * 2f, grassSide, entityManager.GraphicsDevice);
+            faces[5].Initialise(backwardPos, Vector3.Zero, grassSide, entityManager.GraphicsDevice);
 
             effect = new BasicEffect(entityManager.GraphicsDevice)
             {
