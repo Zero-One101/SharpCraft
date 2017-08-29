@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 using SharpCraft.Managers;
 using SharpCraft.Events;
 
@@ -20,11 +21,12 @@ namespace SharpCraft
         private readonly List<Keys> upKeys = new List<Keys>();
         private EntityManager entityManager;
         private Vector3 camPosition;
-        private float yaw;
-        private float pitch;
-        private float roll;
-        private Matrix rotationMatrix;
-        private Matrix translationMatrix;
+        private float rotY = 0f;
+        private float rotX = 0f;
+        private Vector2 mouseVector;
+        private Vector3 finalTarget;
+        private const float rotationSpeed = 0.03f;
+        private const float moveSpeed = 300.0f;
 
         /// <summary>
         /// The projection matrix of the camera
@@ -46,12 +48,16 @@ namespace SharpCraft
             this.entityManager = entityManager;
             entityManager.KeyDown += EntityManager_KeyDown;
             entityManager.KeyUp += EntityManager_KeyUp;
+            entityManager.MouseMove += EntityManager_MouseMove;
 
             camPosition = new Vector3(0f, 0f, -500);
-            translationMatrix = Matrix.CreateTranslation(camPosition);
-            rotationMatrix = Matrix.CreateFromYawPitchRoll(yaw, pitch, roll);
             ProjectionMatrix = Matrix.CreatePerspectiveFieldOfView(MathHelper.ToRadians(fov), aspectRatio, 1f, 10000000f);
-            ViewMatrix = Matrix.CreateLookAt(camPosition, rotationMatrix.Forward, Vector3.Up);
+            UpdateViewMatrix();
+        }
+
+        private void EntityManager_MouseMove(object sender, MouseMoveEventArgs e)
+        {
+            mouseVector = e.MouseVector;
         }
 
         private void EntityManager_KeyDown(object sender, KeyDownEventArgs e)
@@ -70,29 +76,61 @@ namespace SharpCraft
         /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
+            var moveVector = new Vector3(0, 0, 0);
+
             if (downKeys.Contains(Keys.W))
             {
-                camPosition.Z += 1;
+                moveVector.Z += 1;
             }
             if (downKeys.Contains(Keys.S))
             {
-                camPosition.Z -= 1;
+                moveVector.Z -= 1;
             }
             if (downKeys.Contains(Keys.A))
             {
-                camPosition.X += 1;
+                moveVector.X += 1;
             }
             if (downKeys.Contains(Keys.D))
             {
-                camPosition.X -= 1;
+                moveVector.X -= 1;
             }
 
-            rotationMatrix = Matrix.CreateRotationY(0);
-            translationMatrix = Matrix.CreateTranslation(camPosition) * rotationMatrix;
-            ViewMatrix = Matrix.CreateLookAt(camPosition, rotationMatrix.Forward, Vector3.Up);
+            rotY -= rotationSpeed * mouseVector.X * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            rotX += rotationSpeed * mouseVector.Y * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            AddToCameraPosition(moveVector * (float)gameTime.ElapsedGameTime.TotalSeconds);
+            UpdateViewMatrix();
 
             downKeys.Clear();
             upKeys.Clear();
+            mouseVector = Vector2.Zero;
+        }
+
+        private void AddToCameraPosition(Vector3 moveVector)
+        {
+            var camRotation = Matrix.CreateRotationX(rotX) * Matrix.CreateRotationY(rotY);
+            var rotatedVector = Vector3.Transform(moveVector, camRotation);
+            camPosition += rotatedVector * moveSpeed;
+        }
+
+        public void DebugDraw(SpriteBatch spriteBatch, SpriteFont debugFont)
+        {
+            spriteBatch.DrawString(debugFont, string.Format("Cam position: {0}", camPosition.ToString()), new Vector2(0, 100), Color.White);
+            spriteBatch.DrawString(debugFont, string.Format("Camera facing: {0}", finalTarget.ToString()), new Vector2(0, 120), Color.White);
+        }
+
+        private void UpdateViewMatrix()
+        {
+            var camRotation = Matrix.CreateRotationX(rotX) * Matrix.CreateRotationY(rotY);
+
+            var camOriginalTarget = new Vector3(0, 0, 1);
+            var camRotatedTarget = Vector3.Transform(camOriginalTarget, camRotation);
+            finalTarget = camPosition + camRotatedTarget;
+
+            var camOriginalUpVector = Vector3.Up;
+            var camRotatedUpVector = Vector3.Transform(camOriginalUpVector, camRotation);
+
+            ViewMatrix = Matrix.CreateLookAt(camPosition, finalTarget, camRotatedUpVector);
         }
     }
 }

@@ -31,6 +31,10 @@ namespace SharpCraft.Managers
         /// </summary>
         public event KeyUpHandler KeyUp;
         /// <summary>
+        /// Fired when the mouse has been moved
+        /// </summary>
+        public event MouseMoveHandler MouseMove;
+        /// <summary>
         /// The graphics device used to draw the scene
         /// </summary>
         public GraphicsDevice GraphicsDevice { get; private set; }
@@ -55,6 +59,7 @@ namespace SharpCraft.Managers
         private readonly List<Keys> downKeys = new List<Keys>();
         private readonly List<Keys> heldKeys = new List<Keys>();
         private readonly List<Keys> upKeys = new List<Keys>();
+        private Vector2 mouseVector = Vector2.Zero;
         private static Point worldSize = new Point(2, 2);
         private Chunk[,] chunks;
 
@@ -69,6 +74,7 @@ namespace SharpCraft.Managers
             inputManager.KeyDown += InputManager_KeyDown;
             inputManager.KeyHeld += InputManager_KeyHeld;
             inputManager.KeyUp += InputManager_KeyUp;
+            inputManager.MouseMove += InputManager_MouseMove;
 
             ResourceManager = resourceManager;
             GraphicsDevice = graphicsDevice;
@@ -100,6 +106,11 @@ namespace SharpCraft.Managers
             upKeys.Add(e.Key);
         }
 
+        private void InputManager_MouseMove(object sender, MouseMoveEventArgs e)
+        {
+            mouseVector = e.MouseVector;
+        }
+
         /// <summary>
         /// Loops through every relevant object and calls Update on them
         /// Also handles refiring of Key events
@@ -122,6 +133,12 @@ namespace SharpCraft.Managers
             foreach (var upKey in upKeys)
             {
                 FireKeyUp(upKey);
+            }
+
+            if (mouseVector != Vector2.Zero)
+            {
+                FireMouseMove();
+                mouseVector = Vector2.Zero;
             }
 
             foreach (var entity in entities)
@@ -169,6 +186,16 @@ namespace SharpCraft.Managers
         private void FireKeyUp(Keys key)
         {
             KeyUp?.Invoke(this, new KeyUpEventArgs(key));
+        }
+
+        private void FireMouseMove()
+        {
+            MouseMove?.Invoke(this, new MouseMoveEventArgs(mouseVector));
+        }
+
+        internal void DebugDraw(SpriteBatch spriteBatch, SpriteFont spriteFont)
+        {
+            Camera.DebugDraw(spriteBatch, spriteFont);
         }
     }
 }

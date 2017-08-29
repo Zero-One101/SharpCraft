@@ -10,6 +10,7 @@ namespace SharpCraft
     public delegate void KeyDownHandler(object sender, KeyDownEventArgs e);
     public delegate void KeyUpHandler(object sender, KeyUpEventArgs e);
     public delegate void KeyHeldHandler(object sender, KeyHeldEventArgs e);
+    public delegate void MouseMoveHandler(object sender, MouseMoveEventArgs e);
 
     /// <summary>
     /// This is the main type for your game.
@@ -46,6 +47,7 @@ namespace SharpCraft
             // TODO: Add your initialization logic here
 
             base.Initialize();
+            Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
             inputManager = new InputManager();
             inputManager.KeyDown += InputManager_KeyDown;
             inputManager.KeyUp += InputManager_KeyUp;
@@ -85,6 +87,7 @@ namespace SharpCraft
 
             // TODO: use this.Content to load your game content here
             spriteFont = Content.Load<SpriteFont>("Fonts/spritefont1");
+
         }
 
         /// <summary>
@@ -114,9 +117,15 @@ namespace SharpCraft
             {
                 showDebug = !showDebug;
             }
+            if (downKeys.Contains(Keys.F) && !heldKeys.Contains(Keys.F))
+            {
+                graphics.IsFullScreen = !graphics.IsFullScreen;
+                graphics.ApplyChanges();
+            }
 
             entityManager.Update(gameTime);
 
+            Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
             downKeys.Clear();
             upKeys.Clear();
             heldKeys.Clear();
@@ -145,19 +154,25 @@ namespace SharpCraft
 
             if (showDebug)
             {
-                spriteBatch.Begin();
-                spriteBatch.DrawString(spriteFont, framerate.ToString(), Vector2.Zero, Color.White);
-                spriteBatch.DrawString(spriteFont, GraphicsAdapter.DefaultAdapter.Description, new Vector2(0, 20), Color.White);
-                spriteBatch.DrawString(spriteFont, string.Format("Block count: {0}", entityManager.BlockCount), new Vector2(0, 40), Color.White);
-                spriteBatch.DrawString(spriteFont, string.Format("Total quads: {0}", entityManager.BlockCount * 6), new Vector2(0, 60), Color.White);
-                spriteBatch.DrawString(spriteFont, string.Format("Quads drawn: {0}", entityManager.QuadCount), new Vector2(0, 80), Color.White);
-                spriteBatch.End();
-
-                GraphicsDevice.BlendState = BlendState.Opaque;
-                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
+                DebugDraw(framerate);
             }
 
             base.Draw(gameTime);
+        }
+
+        private void DebugDraw(double framerate)
+        {
+            spriteBatch.Begin();
+            spriteBatch.DrawString(spriteFont, framerate.ToString(), Vector2.Zero, Color.White);
+            spriteBatch.DrawString(spriteFont, GraphicsAdapter.DefaultAdapter.Description, new Vector2(0, 20), Color.White);
+            spriteBatch.DrawString(spriteFont, string.Format("Block count: {0}", entityManager.BlockCount), new Vector2(0, 40), Color.White);
+            spriteBatch.DrawString(spriteFont, string.Format("Total quads: {0}", entityManager.BlockCount * 6), new Vector2(0, 60), Color.White);
+            spriteBatch.DrawString(spriteFont, string.Format("Quads drawn: {0}", entityManager.QuadCount), new Vector2(0, 80), Color.White);
+            entityManager.DebugDraw(spriteBatch, spriteFont);
+            spriteBatch.End();
+
+            GraphicsDevice.BlendState = BlendState.Opaque;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
         }
     }
 }

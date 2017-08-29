@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using SharpCraft.Events;
 
@@ -25,12 +26,24 @@ namespace SharpCraft.Managers
         /// Fired when a key is released this frame
         /// </summary>
         public event KeyUpHandler KeyUp;
+        /// <summary>
+        /// Fired when the mouse has moved
+        /// </summary>
+        public event MouseMoveHandler MouseMove;
 
         private KeyboardState keyboardState;
+        private MouseState mouseState;
+        private Point initMousePos;
         private readonly List<Keys> downKeys = new List<Keys>();
         private readonly List<Keys> upKeys = new List<Keys>();
         private readonly List<Keys> prevDownKeys = new List<Keys>();
         private readonly List<Keys> heldKeys = new List<Keys>();
+
+        public InputManager()
+        {
+            mouseState = Mouse.GetState();
+            initMousePos = mouseState.Position;
+        }
 
         /// <summary>
         /// Polls input devices to return their current state.
@@ -39,6 +52,7 @@ namespace SharpCraft.Managers
         public void Update()
         {
             keyboardState = Keyboard.GetState();
+            mouseState = Mouse.GetState();
 
             heldKeys.Clear();
             prevDownKeys.Clear();
@@ -72,6 +86,13 @@ namespace SharpCraft.Managers
             {
                 FireKeyUp(upKey);
             }
+
+            var curMousePos = mouseState.Position;
+            if (curMousePos != initMousePos)
+            {
+                var mouseVector = (curMousePos - initMousePos).ToVector2();
+                MouseMove?.Invoke(this, new MouseMoveEventArgs(mouseVector));
+            }
         }
 
         private void FireKeyDown(Keys downKey)
@@ -87,6 +108,11 @@ namespace SharpCraft.Managers
         private void FireKeyHeld(Keys heldHey)
         {
             KeyHeld?.Invoke(this, new KeyHeldEventArgs(heldHey));
+        }
+
+        private void FireMouseMove(Vector2 mouseVector)
+        {
+            MouseMove?.Invoke(this, new MouseMoveEventArgs(mouseVector));
         }
     }
 }
