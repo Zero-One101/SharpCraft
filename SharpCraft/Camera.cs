@@ -11,6 +11,9 @@ using SharpCraft.Events;
 
 namespace SharpCraft
 {
+    /// <summary>
+    /// A 3D camera
+    /// </summary>
     public class Camera
     {
         private readonly List<Keys> downKeys = new List<Keys>();
@@ -23,9 +26,21 @@ namespace SharpCraft
         private Matrix rotationMatrix;
         private Matrix translationMatrix;
 
+        /// <summary>
+        /// The projection matrix of the camera
+        /// </summary>
         public Matrix ProjectionMatrix { get; private set; }
+        /// <summary>
+        /// The view matrix of the camera
+        /// </summary>
         public Matrix ViewMatrix { get; private set; }
 
+        /// <summary>
+        /// Instantiates the camera with the specified FOV and aspect ratio
+        /// </summary>
+        /// <param name="entityManager">The EntityManager instance</param>
+        /// <param name="fov">The Field Of Vision of this camera</param>
+        /// <param name="aspectRatio">The aspect ratio of the game window</param>
         public Camera(EntityManager entityManager, float fov, float aspectRatio)
         {
             this.entityManager = entityManager;
@@ -49,6 +64,10 @@ namespace SharpCraft
             upKeys.Add(e.Key);
         }
 
+        /// <summary>
+        /// Updates the camera, allowing it to respond to inputs
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
             if (downKeys.Contains(Keys.W))

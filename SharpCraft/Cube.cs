@@ -6,6 +6,9 @@ using SharpCraft.Managers;
 
 namespace SharpCraft
 {
+    /// <summary>
+    /// The smallest unit of the world
+    /// </summary>
     class Cube : GameObject
     {
         private Chunk parent;
@@ -18,6 +21,12 @@ namespace SharpCraft
         private Texture2D grassSide;
         private Texture2D dirt;
 
+        /// <summary>
+        /// Creates an instance of a block
+        /// </summary>
+        /// <param name="entityManager">The EntityManager instance</param>
+        /// <param name="parent">The chunk this block belongs to</param>
+        /// <param name="position">The position of this block in 3D space</param>
         public Cube(EntityManager entityManager, Chunk parent, Vector3 position) : base(entityManager)
         {
             grassTop = entityManager.ResourceManager.LoadTexture("grass_top_green");
@@ -72,6 +81,10 @@ namespace SharpCraft
             
         }
 
+        /// <summary>
+        /// Returns the number of quads this block will draw
+        /// </summary>
+        /// <returns></returns>
         public int GetDrawCount()
         {
             return drawList.Count;

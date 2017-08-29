@@ -8,6 +8,9 @@ using SharpCraft.Managers;
 
 namespace SharpCraft
 {
+    /// <summary>
+    /// An object that can be placed in the scene and optionally updated and drawn
+    /// </summary>
     public abstract class GameObject
     {
         protected EntityManager entityManager;

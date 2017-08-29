@@ -9,14 +9,29 @@ using SharpCraft.Managers;
 
 namespace SharpCraft
 {
+    /// <summary>
+    /// One world "unit" holding a collection of blocks
+    /// </summary>
     class Chunk : GameObject
     {
+        /// <summary>
+        /// The dimensions of each chunk
+        /// </summary>
         public static Vector3 chunkSize = new Vector3(16, 16, 16);
+
         private Cube[,,] cubes;
         private Vector3 position;
 
+        /// <summary>
+        /// The number of blocks in this chunk
+        /// </summary>
         public int BlockCount { get; private set; }
         
+        /// <summary>
+        /// Creates a Chunk at the specified postion
+        /// </summary>
+        /// <param name="entityManager">The EntityManager instance</param>
+        /// <param name="position">The position of the chunk in 3D space</param>
         public Chunk(EntityManager entityManager, Vector3 position) : base(entityManager)
         {
             this.position = position;
@@ -53,6 +68,11 @@ namespace SharpCraft
             }
         }
 
+        /// <summary>
+        /// Returns 0-6 blocks surrounding the given position
+        /// </summary>
+        /// <param name="position">The position of the centre block</param>
+        /// <returns></returns>
         public Cube[] GetSurroundingCubes(Vector3 position)
         {
             // Use position as array index
@@ -70,6 +90,10 @@ namespace SharpCraft
             return surroundingCubes;
         }
 
+        /// <summary>
+        /// Returns the number of quads drawn in this chunk
+        /// </summary>
+        /// <returns></returns>
         public int GetQuadCount()
         {
             var quadCount = 0;

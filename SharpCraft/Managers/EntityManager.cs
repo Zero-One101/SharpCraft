@@ -11,15 +11,44 @@ using SharpCraft.Events;
 
 namespace SharpCraft.Managers
 {
+    /// <summary>
+    /// Handles the management of all objects relevant to the game
+    /// Includes GameObjects, cameras and other managers
+    /// Allows GameObjects access to the rest of the game
+    /// </summary>
     public class EntityManager
     {
+        /// <summary>
+        /// Fired when a key is pressed this frame
+        /// </summary>
         public event KeyDownHandler KeyDown;
+        /// <summary>
+        /// Fired when a key has been pressed for more than one frame
+        /// </summary>
         public event KeyHeldHandler KeyHeld;
+        /// <summary>
+        /// Fired when a key has been released
+        /// </summary>
         public event KeyUpHandler KeyUp;
+        /// <summary>
+        /// The graphics device used to draw the scene
+        /// </summary>
         public GraphicsDevice GraphicsDevice { get; private set; }
+        /// <summary>
+        /// The resource manager used to handle resources
+        /// </summary>
         public ResourceManager ResourceManager { get; private set; }
+        /// <summary>
+        /// The game camera
+        /// </summary>
         public Camera Camera { get; private set; }
+        /// <summary>
+        /// How many blocks are in the current scene
+        /// </summary>
         public int BlockCount { get; private set; }
+        /// <summary>
+        /// The number of quads being drawn in the current scene
+        /// </summary>
         public int QuadCount { get; private set; }
 
         private readonly List<GameObject> entities = new List<GameObject>();
@@ -29,6 +58,12 @@ namespace SharpCraft.Managers
         private static Point worldSize = new Point(2, 2);
         private Chunk[,] chunks;
 
+        /// <summary>
+        /// Instantiates the EntityManager
+        /// </summary>
+        /// <param name="inputManager"></param>
+        /// <param name="resourceManager"></param>
+        /// <param name="graphicsDevice"></param>
         public EntityManager(InputManager inputManager, ResourceManager resourceManager, GraphicsDevice graphicsDevice)
         {
             inputManager.KeyDown += InputManager_KeyDown;
@@ -65,6 +100,11 @@ namespace SharpCraft.Managers
             upKeys.Add(e.Key);
         }
 
+        /// <summary>
+        /// Loops through every relevant object and calls Update on them
+        /// Also handles refiring of Key events
+        /// </summary>
+        /// <param name="gameTime">The elapsed game time since the last frame</param>
         public void Update(GameTime gameTime)
         {
             Camera.Update(gameTime);
@@ -94,6 +134,10 @@ namespace SharpCraft.Managers
             upKeys.Clear();
         }
 
+        /// <summary>
+        /// Loops through every relevant object and calls Draw on them
+        /// </summary>
+        /// <param name="gameTime">The elapsed game time since the last frame</param>
         public void Draw(GameTime gameTime)
         {
             foreach (var entity in entities)

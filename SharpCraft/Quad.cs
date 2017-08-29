@@ -8,6 +8,9 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace SharpCraft
 {
+    /// <summary>
+    /// Defines a quad primitive
+    /// </summary>
     class Quad
     {
         private GraphicsDevice graphicsDevice;
@@ -20,6 +23,13 @@ namespace SharpCraft
         private Texture2D texture;
         VertexPositionTexture[] vertices;
 
+        /// <summary>
+        /// Creates a textured quad at the specified position and rotation
+        /// </summary>
+        /// <param name="position">The position of the quad in the world</param>
+        /// <param name="rotation">The rotation of the quad in the world</param>
+        /// <param name="texture">The texture of the quad</param>
+        /// <param name="graphicsDevice">The graphics device used to draw</param>
         public void Initialise(Vector3 position, Vector3 rotation, Texture2D texture, GraphicsDevice graphicsDevice)
         {
             this.texture = texture;
@@ -47,6 +57,13 @@ namespace SharpCraft
             this.graphicsDevice = graphicsDevice;
         }
 
+        /// <summary>
+        /// Draws the quad to the scene
+        /// </summary>
+        /// <param name="gameTime">The elapsed game time since the last frame</param>
+        /// <param name="viewMatrix">The camera view matrix</param>
+        /// <param name="projectionMatrix">The camera projection matrix</param>
+        /// <param name="effect">The BasicEffect of the quad</param>
         public void Draw(GameTime gameTime, Matrix viewMatrix, Matrix projectionMatrix, BasicEffect effect)
         {
             effect.Texture = texture;
